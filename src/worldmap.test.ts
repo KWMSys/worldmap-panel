@@ -261,9 +261,9 @@ describe('Worldmap', () => {
       expect(worldMap.legend).toBeDefined();
       expect(worldMap.legend._div.outerHTML).toBe(
         '<div class="info legend leaflet-control">' +
-        '<div class="legend-item">' +
-        '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2+</div>' +
-        '</div>'
+          '<div class="legend-item">' +
+          '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2+</div>' +
+          '</div>'
       );
     });
   });
@@ -290,8 +290,8 @@ describe('Worldmap', () => {
       expect(worldMap.legend).toBeDefined();
       expect(worldMap.legend._div.outerHTML).toBe(
         '<div class="info legend leaflet-control"><div class="legend-item">' +
-        '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2–4</div>' +
-        '<div class="legend-item"><i style="background:green"></i> 4+</div></div>'
+          '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2–4</div>' +
+          '<div class="legend-item"><i style="background:green"></i> 4+</div></div>'
       );
     });
   });
@@ -306,9 +306,9 @@ describe('Worldmap', () => {
       expect(worldMap.legend).toBeDefined();
       expect(worldMap.legend._div.outerHTML).toBe(
         '<div class="info legend leaflet-control"><div class="legend-item">' +
-        '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2–4</div>' +
-        '<div class="legend-item"><i style="background:green"></i> 4–6</div>' +
-        '<div class="legend-item"><i style="background:undefined"></i> 6+</div></div>'
+          '<i style="background:red"></i> &lt; 2</div><div class="legend-item"><i style="background:blue"></i> 2–4</div>' +
+          '<div class="legend-item"><i style="background:green"></i> 4–6</div>' +
+          '<div class="legend-item"><i style="background:undefined"></i> 6+</div></div>'
       );
     });
   });
