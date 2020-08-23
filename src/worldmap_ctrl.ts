@@ -58,6 +58,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   dataFormatter: DataFormatter;
   locations: any;
   tileServer: string;
+  isLightTheme = false;
   saturationClass: string;
   map: any;
   series: any;
@@ -82,17 +83,16 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   setMapProvider(contextSrv) {
-    this.tileServer = contextSrv.user.lightTheme
-      ? "OpenStreetMap DE"
-      : "OpenStreetMap DE";
+    this.isLightTheme = contextSrv.user.lightTheme;
+    this.tileServer = "OpenStreetMap DE";
     this.setMapSaturationClass();
   }
 
   setMapSaturationClass() {
-    if (this.tileServer === "CartoDB Dark") {
-      this.saturationClass = "map-darken";
-    } else {
+    if (this.isLightTheme) {
       this.saturationClass = "";
+    } else {
+      this.saturationClass = "map-darken";
     }
   }
 
