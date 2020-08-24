@@ -2,12 +2,12 @@
   "name": "worldmap-panel",
   "version": "1.0.1",
   "description": "Worldmap Panel Plugin for Grafana",
-  "main": "src/module.js",
+  "main": "src/module.ts",
   "scripts": {
-    "build": "grafana-toolkit plugin:build",
-    "test": "grafana-toolkit plugin:test",
-    "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch"
+    "build": "node ./copy_static_files.js && grafana-toolkit plugin:build",
+    "test": "node ./copy_static_files.js && grafana-toolkit plugin:test",
+    "dev": "node ./copy_static_files.js && grafana-toolkit plugin:dev",
+    "watch": "node ./copy_static_files.js && grafana-toolkit plugin:dev --watch"
   },
   "keywords": [
     "worldmap",
