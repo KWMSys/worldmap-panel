@@ -15,6 +15,7 @@ describe('DataFormatter', () => {
             longitudeField: 'longitude',
           },
         },
+        store: {},
       };
       dataFormatter = new DataFormatter(ctrl);
     });
@@ -96,6 +97,7 @@ describe('DataFormatter', () => {
           { alias: 'IE', datapoints: [1, 2], stats: { total: 3 } },
           { alias: 'SE', datapoints: [2, 3], stats: { total: 5 } },
         ],
+        store: {},
       };
       dataFormatter = new DataFormatter(ctrl);
       dataFormatter.setValues(formattedData);
@@ -130,6 +132,7 @@ describe('DataFormatter', () => {
           { alias: 'ie', datapoints: [1, 2], stats: { total: 3 } },
           { alias: 'se', datapoints: [2, 3], stats: { total: 5 } },
         ],
+        store: {},
       };
       dataFormatter = new DataFormatter(ctrl);
       dataFormatter.setValues(formattedData);
@@ -161,6 +164,7 @@ describe('DataFormatter', () => {
           { alias: 'SX', datapoints: [1, 2], stats: { total: 3 } },
           { alias: 'IE', datapoints: [1, 2], stats: { total: 3 } },
         ],
+        store: {},
       };
       dataFormatter = new DataFormatter(ctrl);
       dataFormatter.setValues(formattedData);
@@ -187,6 +191,7 @@ describe('DataFormatter', () => {
             { alias: 'IE', datapoints: [1.11, 2.22], stats: { total: 3.33 } },
             { alias: 'SE', datapoints: [2.221, 3.331], stats: { total: 5.552 } },
           ],
+          store: {},
         };
         dataFormatter = new DataFormatter(ctrl);
         dataFormatter.setValues(formattedData);
@@ -212,6 +217,7 @@ describe('DataFormatter', () => {
             { alias: 'IE', datapoints: [1.11, 2.22], stats: { total: 3.33 } },
             { alias: 'SE', datapoints: [2.221, 3.331], stats: { total: 5.552 } },
           ],
+          store: {},
         };
         dataFormatter = new DataFormatter(ctrl);
         dataFormatter.setValues(formattedData);
