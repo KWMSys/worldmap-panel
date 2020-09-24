@@ -60,6 +60,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   series: any;
   data: any;
   mapCenterMoved = false;
+  store = {};
 
   /** @ngInject **/
   constructor($scope, $injector, contextSrv) {

@@ -16,13 +16,16 @@ export default class DataFormatter {
         const location = _.find(this.ctrl.locations, loc => {
           return loc.key.toUpperCase() === serie.alias.toUpperCase();
         });
+        const timestamp = _.isArray(lastPoint) ? lastPoint[1] : null;
 
         if (!location) {
           return;
         }
 
         if (_.isString(lastValue)) {
-          data.push({ key: serie.alias, value: 0, valueFormatted: lastValue, valueRounded: 0 });
+          data.push(
+            this.setStoreData({ key: serie.alias, value: 0, valueFormatted: lastValue, valueRounded: 0 }, timestamp)
+          );
         } else {
           const dataValue = {
             key: serie.alias,
@@ -43,14 +46,33 @@ export default class DataFormatter {
           }
 
           dataValue.valueRounded = kbn.roundValue(dataValue.value, parseInt(this.ctrl.panel.decimals, 10) || 0);
-          data.push(dataValue);
+          data.push(this.setStoreData(dataValue, timestamp));
         }
       });
+      console.log(this.ctrl.store);
+
+      // Add data which are not in series
+      Object.keys(this.ctrl.store)
+        .filter(x => this.ctrl.store.hasOwnProperty(x) && data.find(y => y.key === x) == null)
+        .map(x => {
+          console.log('Fill data');
+          data.push(this.ctrl.store[x].data);
+        });
 
       data.highestValue = highestValue;
       data.lowestValue = lowestValue;
       data.valueRange = highestValue - lowestValue;
     }
+  }
+
+  setStoreData(data, timestamp) {
+    if (this.ctrl.store[data.key] == null || this.ctrl.store[data.key].timestamp < timestamp) {
+      this.ctrl.store[data.key] = {
+        timestamp,
+        data,
+      };
+    }
+    return data;
   }
 
   createDataValue(encodedGeohash, decodedGeohash, locationName, value) {
