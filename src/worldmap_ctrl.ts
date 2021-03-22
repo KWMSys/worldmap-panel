@@ -16,6 +16,7 @@ const panelDefaults = {
   mapCenterLongitude: 0,
   initialZoom: 1,
   valueName: 'total',
+  displayMode: 'inlet structures display',
   circleMinSize: 2,
   circleMaxSize: 30,
   locationData: 'countries',
