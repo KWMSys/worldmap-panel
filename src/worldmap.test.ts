@@ -18,10 +18,7 @@ describe('Worldmap', () => {
 
   describe('when the data has one point', () => {
     beforeEach(() => {
-      ctrl.data = new DataBuilder()
-        .withCountryAndValue('SE', 1)
-        .withDataRange(1, 1, 0)
-        .build();
+      ctrl.data = new DataBuilder().withCountryAndValue('SE', 1).withDataRange(1, 1, 0).build();
       ctrl.panel.circleMaxSize = '10';
       worldMap.drawCircles();
     });

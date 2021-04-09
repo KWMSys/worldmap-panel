@@ -17,6 +17,10 @@ const panelDefaults = {
   initialZoom: 1,
   valueName: 'total',
   displayMode: 'inlet structures display',
+  fiveMinIndex: 8,
+  tenMinIndex: 13,
+  thirtyMinIndex: 19,
+  sixtyMinIndex: 23,
   circleMinSize: 2,
   circleMaxSize: 30,
   locationData: 'countries',
@@ -116,7 +120,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         contentType: 'application/json',
         jsonpCallback: this.panel.jsonpCallback,
         dataType: 'jsonp',
-        success: res => {
+        success: (res) => {
           this.locations = res;
           this.refresh();
         },
@@ -126,14 +130,15 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         return;
       }
 
-      $.getJSON(this.panel.jsonUrl).then(res => {
+      $.getJSON(this.panel.jsonUrl).then((res) => {
         this.locations = res;
         this.refresh();
       });
     } else if (this.panel.locationData === 'table') {
       // .. Do nothing
     } else if (this.panel.locationData !== 'geohash' && this.panel.locationData !== 'json result') {
-      $.getJSON('public/plugins/grafana-worldmap-panel/data/' + this.panel.locationData + '.json').then(
+      //Todo: change back to $.getJSON('public/plugins/grafana-worldmap-panel/data/' + this.panel.locationData + '.json').then(
+      $.getJSON('public/plugins/grafana-worldmap-panel-ultimate/data/' + this.panel.locationData + '.json').then(
         this.reloadLocations.bind(this)
       );
     }
@@ -158,8 +163,9 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     }
   }
 
+  //Todo change back to this.addEditorTab('Worldmap', 'public/plugins/grafana-worldmap-panel/partials/editor.html', 2);
   onInitEditMode() {
-    this.addEditorTab('Worldmap', 'public/plugins/grafana-worldmap-panel/partials/editor.html', 2);
+    this.addEditorTab('Worldmap', 'public/plugins/grafana-worldmap-panel-ultimate/partials/editor.html', 2);
   }
 
   onDataReceived(dataList) {
@@ -258,7 +264,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   updateThresholdData() {
-    this.data.thresholds = this.panel.thresholds.split(',').map(strValue => {
+    this.data.thresholds = this.panel.thresholds.split(',').map((strValue) => {
       return Number(strValue.trim());
     });
     while (_.size(this.panel.colors) > _.size(this.data.thresholds) + 1) {

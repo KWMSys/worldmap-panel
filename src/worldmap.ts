@@ -113,7 +113,7 @@ export default class WorldMap {
   }
 
   filterEmptyAndZeroValues(data) {
-    return _.filter(data, o => {
+    return _.filter(data, (o) => {
       return !(this.ctrl.panel.hideEmpty && _.isNil(o.value)) && !(this.ctrl.panel.hideZero && o.value === 0);
     });
   }
@@ -138,7 +138,7 @@ export default class WorldMap {
 
   createCircles(data) {
     const circles: any[] = [];
-    data.forEach(dataPoint => {
+    data.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
@@ -149,12 +149,12 @@ export default class WorldMap {
   }
 
   updateCircles(data) {
-    data.forEach(dataPoint => {
+    data.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
 
-      const circle = _.find(this.circles, cir => {
+      const circle = _.find(this.circles, (cir) => {
         return cir.options.location === dataPoint.key;
       });
 
@@ -172,6 +172,7 @@ export default class WorldMap {
     });
   }
 
+  // hier wird das createPopup aufgerufen
   createCircle(dataPoint) {
     const circle = (window as any).L.circleMarker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
       radius: this.calcCircleSize(dataPoint.value || 0),
@@ -199,9 +200,15 @@ export default class WorldMap {
     return circleSizeRange * dataFactor + circleMinSize;
   }
 
+  // Todo: Hier wird das popup erstellt.
+  // gucken was die klasse worldmap-popup macht
   createPopup(circle, locationName, value) {
     const unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
-    const label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+    let label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+    // try to inject into the label html code
+    if (this.ctrl.panel.displayMode === 'rain gauge display') {
+      label = this.generateTablePopupContent(10, 10, 30, 5);
+    }
     circle.bindPopup(label, {
       offset: (window as any).L.point(0, -2),
       className: 'worldmap-popup',
@@ -273,5 +280,50 @@ export default class WorldMap {
       this.removeLegend();
     }
     this.map.remove();
+  }
+
+  generateTablePopupContent(fiveMinValue: number, tenMinValue: number, thirtyMinValue: number, sixtyMinValue: number) {
+    var basicHtmlContent =
+      '<div><table><thead><tr style="background-color: #397f9e;"><th style="padding: 5px; text-align: center;"> Dauerstufe [min]</th>';
+    basicHtmlContent +=
+      '<th style="padding: 5px; text-align: center;"> Niederschlag jetzt [mm]</th><th style="padding: 5px; text-align: center;"> Starkregen [mm]</th></tr>';
+    basicHtmlContent +=
+      '</thead><tbody><tr style="text-align: center; background-color: bg_5Min;"><td>5</td><td>value_5</td><td>comp_5</td>';
+    basicHtmlContent +=
+      '</tr><tr style="text-align: center; background-color: bg_10Min;"><td>10</td><td>value_10</td><td>comp_10</td></tr>';
+    basicHtmlContent +=
+      '<tr style="text-align: center; background-color: bg_30Min;"><td>30</td><td>value_30</td><td>comp_30</td></tr>';
+    basicHtmlContent +=
+      '<tr style="text-align: center; background-color: bg_60Min;"><td>60</td><td>value_60</td><td>comp_60</td></tr>';
+    basicHtmlContent += '</tbody></table></div>';
+    basicHtmlContent = basicHtmlContent.replace('value_5', fiveMinValue.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_5', this.ctrl.panel.fiveMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('value_10', tenMinValue.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_10', this.ctrl.panel.tenMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('value_30', thirtyMinValue.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_30', this.ctrl.panel.thirtyMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('value_60', sixtyMinValue.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_60', this.ctrl.panel.sixtyMinIndex.toString());
+    if (this.ctrl.panel.fiveMinIndex < fiveMinValue) {
+      basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'red');
+    } else {
+      basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'none');
+    }
+    if (this.ctrl.panel.tenMinIndex < tenMinValue) {
+      basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'red');
+    } else {
+      basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'none');
+    }
+    if (this.ctrl.panel.thirtyMinIndex < thirtyMinValue) {
+      basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'red');
+    } else {
+      basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'none');
+    }
+    if (this.ctrl.panel.sixtyMinIndex < sixtyMinValue) {
+      basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'red');
+    } else {
+      basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'none');
+    }
+    return basicHtmlContent;
   }
 }
