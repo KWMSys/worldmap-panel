@@ -283,14 +283,18 @@ export default class WorldMap {
   }
 
   generateTablePopupContent(dataPoint, dataPoints, stationName: string) {
+    // Sortierung geht wohl ned es wird -1 zurück gegeben (mit einer anderen sortieren machen)
+
     let filteredDataPoints = dataPoints
       .filter((data) => data.key === dataPoint.key)
-      .sort((a, b) => 0 - (a.valueRounded > b.valueRounded ? -1 : 1));
+      .sort((a, b) => 0 - (a.value > b.value ? -1 : 1));
+
+    let sriVal = this.ctrl.panel.sri?.find((el) => +el.id === +dataPoint.key);
 
     var basicHtmlContent =
       '<div><b>st_name:</b><br><table><thead><tr style="background-color: #397f9e;"><th style="padding: 5px; text-align: center;"> Dauerstufe [min]</th>';
     basicHtmlContent +=
-      '<th style="padding: 5px; text-align: center;"> Niederschlag jetzt [mm]</th><th style="padding: 5px; text-align: center;"> Starkregen [mm]</th></tr>';
+      '<th style="padding: 5px; text-align: center;"> Niederschlagshöhe aktuell [mm]</th><th style="padding: 5px; text-align: center;"> SRI1 (Starkregen) [mm]</th></tr>';
     basicHtmlContent +=
       '</thead><tbody><tr style="text-align: center; background-color: bg_5Min;"><td>5</td><td>value_5</td><td>comp_5</td>';
     basicHtmlContent +=
@@ -304,44 +308,49 @@ export default class WorldMap {
     basicHtmlContent = basicHtmlContent.replace('st_name', stationName);
     basicHtmlContent = basicHtmlContent.replace(
       'value_5',
-      filteredDataPoints[0] ? filteredDataPoints[0].valueRounded.toString() : '-1'
+      filteredDataPoints[0] ? round(filteredDataPoints[0].value, 1).toString() : 'null'
     );
-    basicHtmlContent = basicHtmlContent.replace('comp_5', this.ctrl.panel.fiveMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_5', sriVal !== null ? sriVal?.sri5.toString() : 'null');
     basicHtmlContent = basicHtmlContent.replace(
       'value_10',
-      filteredDataPoints[1] ? filteredDataPoints[1].valueRounded.toString() : '-1'
+      filteredDataPoints[1] ? round(filteredDataPoints[1].value, 1).toString() : 'null'
     );
-    basicHtmlContent = basicHtmlContent.replace('comp_10', this.ctrl.panel.tenMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_10', sriVal !== null ? sriVal?.sri10.toString() : 'null');
     basicHtmlContent = basicHtmlContent.replace(
       'value_30',
-      filteredDataPoints[2] ? filteredDataPoints[2].valueRounded.toString() : '-1'
+      filteredDataPoints[2] ? round(filteredDataPoints[2].value, 1).toString() : 'null'
     );
-    basicHtmlContent = basicHtmlContent.replace('comp_30', this.ctrl.panel.thirtyMinIndex.toString());
+    basicHtmlContent = basicHtmlContent.replace('comp_30', sriVal !== null ? sriVal?.sri30.toString() : 'null');
     basicHtmlContent = basicHtmlContent.replace(
       'value_60',
-      filteredDataPoints[3] ? filteredDataPoints[3].valueRounded.toString() : '-1'
+      filteredDataPoints[3] ? round(filteredDataPoints[3].value, 1).toString() : 'null'
     );
-    basicHtmlContent = basicHtmlContent.replace('comp_60', this.ctrl.panel.sixtyMinIndex.toString());
-    if (+this.ctrl.panel.fiveMinIndex < +(filteredDataPoints[0] ? filteredDataPoints[0].valueRounded : 0)) {
+    basicHtmlContent = basicHtmlContent.replace('comp_60', sriVal !== null ? sriVal?.sri60.toString() : 'null');
+    if (+sriVal?.sri5 <= +(filteredDataPoints[0] ? filteredDataPoints[0].value : 0)) {
       basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'red');
     } else {
       basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'none');
     }
-    if (+this.ctrl.panel.tenMinIndex < +(filteredDataPoints[1] ? filteredDataPoints[1].valueRounded : 0)) {
+    if (+sriVal?.sri10 <= +(filteredDataPoints[1] ? filteredDataPoints[1].value : 0)) {
       basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'red');
     } else {
       basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'none');
     }
-    if (+this.ctrl.panel.thirtyMinIndex < +(filteredDataPoints[2] ? filteredDataPoints[2].valueRounded : 0)) {
+    if (+sriVal?.sri30 <= +(filteredDataPoints[2] ? filteredDataPoints[2].value : 0)) {
       basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'red');
     } else {
       basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'none');
     }
-    if (+this.ctrl.panel.sixtyMinIndex < +(filteredDataPoints[3] ? filteredDataPoints[3].valueRounded : 0)) {
+    if (+sriVal?.sri60 <= +(filteredDataPoints[3] ? filteredDataPoints[3].value : 0)) {
       basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'red');
     } else {
       basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'none');
     }
     return basicHtmlContent;
   }
+}
+
+function round(value, precision) {
+  var multiplier = Math.pow(10, precision || 0);
+  return Math.round(value * multiplier) / multiplier;
 }

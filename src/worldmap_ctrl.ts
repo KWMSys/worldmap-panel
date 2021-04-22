@@ -35,6 +35,8 @@ const panelDefaults = {
   hideEmpty: false,
   hideZero: false,
   stickyLabels: false,
+  sri: [],
+  sriEndpoint: '',
   tableQueryOptions: {
     queryType: 'geohash',
     geohashField: 'geohash',
@@ -80,8 +82,22 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
-
+    this.loadSri();
     this.loadLocationDataFromFile();
+  }
+
+  loadSri() {
+    if (this.panel.sriEndpoint !== '' && this.panel.sriEndpoint !== null) {
+      $.ajax({
+        type: 'GET',
+        url: this.panel.sriEndpoint,
+        contentType: 'application/json',
+        dataType: 'jsonp',
+        success: (res) => {
+          this.panel.sri = res;
+        },
+      });
+    }
   }
 
   setMapProvider(contextSrv) {

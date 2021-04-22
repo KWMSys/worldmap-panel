@@ -71,20 +71,8 @@
                 </div>
             </div>
             <div class="gf-form" ng-show="ctrl.panel.displayMode === 'rain gauge display'">
-                <label class="gf-form-label width-12">5 Min Index</label>
-                <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.fiveMinIndex" ng-change="ctrl.refresh()" ng-model-onblur />
-            </div>
-            <div class="gf-form" ng-show="ctrl.panel.displayMode === 'rain gauge display'">
-                <label class="gf-form-label width-12">10 Min Index</label>
-                <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.tenMinIndex" ng-change="ctrl.refresh()" ng-model-onblur />
-            </div>
-            <div class="gf-form" ng-show="ctrl.panel.displayMode === 'rain gauge display'">
-                <label class="gf-form-label width-12">30 Min Index</label>
-                <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.thirtyMinIndex" ng-change="ctrl.refresh()" ng-model-onblur />
-            </div>
-            <div class="gf-form" ng-show="ctrl.panel.displayMode === 'rain gauge display'">
-                <label class="gf-form-label width-12">60 Min Index</label>
-                <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.sixtyMinIndex" ng-change="ctrl.refresh()" ng-model-onblur />
+                <label class="gf-form-label width-12">JSON SRI Endpoint</label>
+                <input type="text" class="input-small gf-form-input width-10" ng-model="ctrl.panel.sriEndpoint" ng-change="ctrl.refresh()" ng-model-onblur />
             </div>
         </div>
         <div class="grafana-info-box max-width-28" ng-show="ctrl.panel.locationData ==='countries'">
