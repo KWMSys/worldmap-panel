@@ -172,7 +172,6 @@ export default class WorldMap {
     });
   }
 
-  // hier wird das createPopup aufgerufen
   createCircle(dataPoint, data) {
     const circle = (window as any).L.circleMarker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
       radius: this.calcCircleSize(dataPoint.value || 0),
@@ -200,8 +199,6 @@ export default class WorldMap {
     return circleSizeRange * dataFactor + circleMinSize;
   }
 
-  // Todo: Hier wird das popup erstellt.
-  // gucken was die klasse worldmap-popup macht
   createPopup(circle, locationName, value, dataPoint, data) {
     const unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
     let label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
