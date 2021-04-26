@@ -113,7 +113,7 @@ export default class WorldMap {
   }
 
   filterEmptyAndZeroValues(data) {
-    return _.filter(data, o => {
+    return _.filter(data, (o) => {
       return !(this.ctrl.panel.hideEmpty && _.isNil(o.value)) && !(this.ctrl.panel.hideZero && o.value === 0);
     });
   }
@@ -138,23 +138,23 @@ export default class WorldMap {
 
   createCircles(data) {
     const circles: any[] = [];
-    data.forEach(dataPoint => {
+    data.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
-      circles.push(this.createCircle(dataPoint));
+      circles.push(this.createCircle(dataPoint, data));
     });
     this.circlesLayer = this.addCircles(circles);
     this.circles = circles;
   }
 
   updateCircles(data) {
-    data.forEach(dataPoint => {
+    data.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
 
-      const circle = _.find(this.circles, cir => {
+      const circle = _.find(this.circles, (cir) => {
         return cir.options.location === dataPoint.key;
       });
 
@@ -167,12 +167,12 @@ export default class WorldMap {
           location: dataPoint.key,
         });
         circle.unbindPopup();
-        this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+        this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded, dataPoint, data);
       }
     });
   }
 
-  createCircle(dataPoint) {
+  createCircle(dataPoint, data) {
     const circle = (window as any).L.circleMarker([dataPoint.locationLatitude, dataPoint.locationLongitude], {
       radius: this.calcCircleSize(dataPoint.value || 0),
       color: this.getColor(dataPoint.value),
@@ -181,7 +181,7 @@ export default class WorldMap {
       location: dataPoint.key,
     });
 
-    this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded);
+    this.createPopup(circle, dataPoint.locationName, dataPoint.valueRounded, dataPoint, data);
     return circle;
   }
 
@@ -199,9 +199,13 @@ export default class WorldMap {
     return circleSizeRange * dataFactor + circleMinSize;
   }
 
-  createPopup(circle, locationName, value) {
+  createPopup(circle, locationName, value, dataPoint, data) {
     const unit = value && value === 1 ? this.ctrl.panel.unitSingular : this.ctrl.panel.unitPlural;
-    const label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+    let label = (locationName + ': ' + value + ' ' + (unit || '')).trim();
+    // try to inject into the label html code
+    if (this.ctrl.panel.displayMode === 'rain gauge display') {
+      label = this.generateTablePopupContent(dataPoint, data, locationName);
+    }
     circle.bindPopup(label, {
       offset: (window as any).L.point(0, -2),
       className: 'worldmap-popup',
@@ -274,4 +278,139 @@ export default class WorldMap {
     }
     this.map.remove();
   }
+
+  generateTablePopupContent(dataPoint, dataPoints, stationName: string) {
+    // Sortierung geht wohl ned es wird -1 zurück gegeben (mit einer anderen sortieren machen)
+
+    let filteredDataPoints = dataPoints
+      .filter((data) => data.key === dataPoint.key)
+      .sort((a, b) => 0 - (a.value > b.value ? -1 : 1));
+
+    let sriVal = this.ctrl.panel.sri?.find((el) => +el.id === +dataPoint.key);
+
+    var basicHtmlContent =
+      '<div><b>st_name:</b><br><table><thead><tr style="background-color: #397f9e;"><th style="padding: 5px; text-align: center;"> Dauerstufe [min]</th>';
+    basicHtmlContent +=
+      '<th style="padding: 5px; text-align: center;"> Niederschlagshöhe aktuell [mm]</th><th style="padding: 5px; text-align: center;"> SRI1 (Starkregen) [mm]</th></tr>';
+    basicHtmlContent += '</thead><tbody>';
+
+    basicHtmlContent = basicHtmlContent.replace('st_name', stationName);
+
+    // SRI 5 min value
+    if (filteredDataPoints[0] !== null && filteredDataPoints[0] !== undefined) {
+      basicHtmlContent +=
+        '<tr style="text-align: center; background-color: bg_5Min;"><td>5</td><td>value_5</td><td>comp_5</td>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_5',
+        filteredDataPoints[0] ? round(filteredDataPoints[0].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_5', sriVal !== null ? sriVal?.sri5.toString() : 'null');
+
+      if (+sriVal?.sri5 <= +(filteredDataPoints[0] ? filteredDataPoints[0].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_5Min', 'none');
+      }
+    }
+
+    // SRI 10 min value
+    if (filteredDataPoints[1] !== null && filteredDataPoints[1] !== undefined) {
+      basicHtmlContent +=
+        '</tr><tr style="text-align: center; background-color: bg_10Min;"><td>10</td><td>value_10</td><td>comp_10</td></tr>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_10',
+        filteredDataPoints[1] ? round(filteredDataPoints[1].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_10', sriVal !== null ? sriVal?.sri10.toString() : 'null');
+
+      if (+sriVal?.sri10 <= +(filteredDataPoints[1] ? filteredDataPoints[1].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_10Min', 'none');
+      }
+    }
+
+    // SRI 30 min value
+    if (filteredDataPoints[2] !== null && filteredDataPoints[2] !== undefined) {
+      basicHtmlContent +=
+        '<tr style="text-align: center; background-color: bg_30Min;"><td>30</td><td>value_30</td><td>comp_30</td></tr>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_30',
+        filteredDataPoints[2] ? round(filteredDataPoints[2].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_30', sriVal !== null ? sriVal?.sri30.toString() : 'null');
+
+      if (+sriVal?.sri30 <= +(filteredDataPoints[2] ? filteredDataPoints[2].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_30Min', 'none');
+      }
+    }
+
+    // SRI 60 min value
+    if (filteredDataPoints[3] !== null && filteredDataPoints[3] !== undefined) {
+      basicHtmlContent +=
+        '<tr style="text-align: center; background-color: bg_60Min;"><td>60</td><td>value_60</td><td>comp_60</td></tr>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_60',
+        filteredDataPoints[3] ? round(filteredDataPoints[3].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_60', sriVal !== null ? sriVal?.sri60.toString() : 'null');
+
+      if (+sriVal?.sri60 <= +(filteredDataPoints[3] ? filteredDataPoints[3].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_60Min', 'none');
+      }
+    }
+
+    // SRI 120 min value
+    if (filteredDataPoints[4] !== null && filteredDataPoints[4] !== undefined) {
+      basicHtmlContent +=
+        '<tr style="text-align: center; background-color: bg_120Min;"><td>120</td><td>value_120</td><td>comp_120</td></tr>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_120',
+        filteredDataPoints[4] ? round(filteredDataPoints[4].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_120', sriVal !== null ? sriVal?.sri120.toString() : 'null');
+
+      if (+sriVal?.sri120 <= +(filteredDataPoints[4] ? filteredDataPoints[4].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_120Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_120Min', 'none');
+      }
+    }
+
+    // SRI 360 min value
+    if (filteredDataPoints[5] !== null && filteredDataPoints[5] !== undefined) {
+      basicHtmlContent +=
+        '<tr style="text-align: center; background-color: bg_360Min;"><td>360</td><td>value_360</td><td>comp_360</td></tr>';
+
+      basicHtmlContent = basicHtmlContent.replace(
+        'value_360',
+        filteredDataPoints[5] ? round(filteredDataPoints[5].value, 1).toString() : 'null'
+      );
+      basicHtmlContent = basicHtmlContent.replace('comp_360', sriVal !== null ? sriVal?.sri360.toString() : 'null');
+
+      if (+sriVal?.sri360 <= +(filteredDataPoints[5] ? filteredDataPoints[5].value : 0)) {
+        basicHtmlContent = basicHtmlContent.replace('bg_360Min', 'red');
+      } else {
+        basicHtmlContent = basicHtmlContent.replace('bg_360Min', 'none');
+      }
+    }
+
+    basicHtmlContent += '</tbody></table></div>';
+
+    return basicHtmlContent;
+  }
+}
+
+function round(value, precision) {
+  var multiplier = Math.pow(10, precision || 0);
+  return Math.round(value * multiplier) / multiplier;
 }

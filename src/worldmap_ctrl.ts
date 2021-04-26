@@ -16,6 +16,11 @@ const panelDefaults = {
   mapCenterLongitude: 0,
   initialZoom: 1,
   valueName: 'total',
+  displayMode: 'inlet structures display',
+  fiveMinIndex: 8,
+  tenMinIndex: 13,
+  thirtyMinIndex: 19,
+  sixtyMinIndex: 23,
   circleMinSize: 2,
   circleMaxSize: 30,
   locationData: 'countries',
@@ -30,6 +35,8 @@ const panelDefaults = {
   hideEmpty: false,
   hideZero: false,
   stickyLabels: false,
+  sri: [],
+  sriEndpoint: '',
   tableQueryOptions: {
     queryType: 'geohash',
     geohashField: 'geohash',
@@ -75,8 +82,22 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
     this.events.on('data-received', this.onDataReceived.bind(this));
     this.events.on('panel-teardown', this.onPanelTeardown.bind(this));
     this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
-
+    this.loadSri();
     this.loadLocationDataFromFile();
+  }
+
+  loadSri() {
+    if (this.panel.sriEndpoint !== '' && this.panel.sriEndpoint !== null) {
+      $.ajax({
+        type: 'GET',
+        url: this.panel.sriEndpoint,
+        contentType: 'application/json',
+        dataType: 'jsonp',
+        success: (res) => {
+          this.panel.sri = res;
+        },
+      });
+    }
   }
 
   setMapProvider(contextSrv) {
@@ -115,7 +136,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         contentType: 'application/json',
         jsonpCallback: this.panel.jsonpCallback,
         dataType: 'jsonp',
-        success: res => {
+        success: (res) => {
           this.locations = res;
           this.refresh();
         },
@@ -125,7 +146,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
         return;
       }
 
-      $.getJSON(this.panel.jsonUrl).then(res => {
+      $.getJSON(this.panel.jsonUrl).then((res) => {
         this.locations = res;
         this.refresh();
       });
@@ -257,7 +278,7 @@ export default class WorldmapCtrl extends MetricsPanelCtrl {
   }
 
   updateThresholdData() {
-    this.data.thresholds = this.panel.thresholds.split(',').map(strValue => {
+    this.data.thresholds = this.panel.thresholds.split(',').map((strValue) => {
       return Number(strValue.trim());
     });
     while (_.size(this.panel.colors) > _.size(this.data.thresholds) + 1) {

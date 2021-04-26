@@ -13,9 +13,9 @@ export default function decodeGeoHash(geohash) {
   lon[1] = 180.0;
   let base32Decoded;
 
-  geohash.split('').forEach(item => {
+  geohash.split('').forEach((item) => {
     base32Decoded = BASE32.indexOf(item);
-    BITS.forEach(mask => {
+    BITS.forEach((mask) => {
       if (isEven) {
         refineInterval(lon, base32Decoded, mask);
       } else {

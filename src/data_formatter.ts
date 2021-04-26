@@ -10,10 +10,10 @@ export default class DataFormatter {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
 
-      this.ctrl.series.forEach(serie => {
+      this.ctrl.series.forEach((serie) => {
         const lastPoint = _.last(serie.datapoints);
         const lastValue = _.isArray(lastPoint) ? lastPoint[0] : null;
-        const location = _.find(this.ctrl.locations, loc => {
+        const location = _.find(this.ctrl.locations, (loc) => {
           return loc.key.toUpperCase() === serie.alias.toUpperCase();
         });
         const timestamp = _.isArray(lastPoint) ? lastPoint[1] : null;
@@ -53,8 +53,8 @@ export default class DataFormatter {
 
       // Add data which are not in series
       Object.keys(this.ctrl.store)
-        .filter(x => this.ctrl.store.hasOwnProperty(x) && data.find(y => y.key === x) == null)
-        .map(x => {
+        .filter((x) => this.ctrl.store.hasOwnProperty(x) && data.find((y) => y.key === x) == null)
+        .map((x) => {
           console.log('Fill data');
           data.push(this.ctrl.store[x].data);
         });
@@ -99,7 +99,7 @@ export default class DataFormatter {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
 
-      dataList.forEach(result => {
+      dataList.forEach((result) => {
         if (result.type === 'table') {
           const columnNames = {};
 
@@ -107,7 +107,7 @@ export default class DataFormatter {
             columnNames[column.text] = columnIndex;
           });
 
-          result.rows.forEach(row => {
+          result.rows.forEach((row) => {
             const encodedGeohash = row[columnNames[this.ctrl.panel.esGeoPoint]];
             const decodedGeohash = decodeGeoHash(encodedGeohash);
             const locationName = this.ctrl.panel.esLocationName
@@ -131,7 +131,7 @@ export default class DataFormatter {
           data.lowestValue = lowestValue;
           data.valueRange = highestValue - lowestValue;
         } else {
-          result.datapoints.forEach(datapoint => {
+          result.datapoints.forEach((datapoint) => {
             const encodedGeohash = datapoint[this.ctrl.panel.esGeoPoint];
             const decodedGeohash = decodeGeoHash(encodedGeohash);
             const locationName = this.ctrl.panel.esLocationName
@@ -167,7 +167,7 @@ export default class DataFormatter {
         columnNames[columnIndex] = column.text;
       });
 
-      tableData.rows.forEach(row => {
+      tableData.rows.forEach((row) => {
         const datapoint = {};
 
         row.forEach((value, columnIndex) => {
@@ -187,7 +187,7 @@ export default class DataFormatter {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
 
-      tableData[0].forEach(datapoint => {
+      tableData[0].forEach((datapoint) => {
         let key;
         let longitude;
         let latitude;
@@ -238,7 +238,7 @@ export default class DataFormatter {
       let highestValue = 0;
       let lowestValue = Number.MAX_VALUE;
 
-      this.ctrl.series.forEach(point => {
+      this.ctrl.series.forEach((point) => {
         const dataValue = {
           key: point.key,
           locationName: point.name,
