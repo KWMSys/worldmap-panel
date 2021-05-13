@@ -1,7 +1,7 @@
 {
     "type": "panel",
-    "name": "Worldmap Panel Ultimate",
-    "id": "grafana-worldmap-panel-ultimate",
+    "name": "Worldmap Panel",
+    "id": "grafana-worldmap-panel",
 
     "info": {
         "description": "World Map panel for Grafana. Displays time series data or geohash data from Elasticsearch overlaid on a world map.",
