@@ -139,12 +139,7 @@ export default class WorldMap {
   createCircles(data) {
     const circles: any[] = [];
 
-    var uniq = data.reduce(function(a,b){
-      if (a.indexOf(b) < 0 ) a.push(b);
-      return a;
-    },[]);
-
-    uniq.forEach((dataPoint) => {
+    this.remove_duplicates_safe(data).forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
@@ -154,14 +149,20 @@ export default class WorldMap {
     this.circles = circles;
   }
 
+  remove_duplicates_safe(arr: any[]) {
+    var seen: any[] = [];
+    var ret_arr: any[] = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (seen.filter((elem) => elem.key === arr[i].key).length === 0) {
+        ret_arr.push(arr[i]);
+        seen.push(arr[i]);
+      }
+    }
+    return ret_arr;
+  }
+
   updateCircles(data) {
-
-    var uniq = data.reduce(function(a,b){
-      if (a.indexOf(b) < 0 ) a.push(b);
-      return a;
-    },[]);
-
-    uniq.forEach((dataPoint) => {
+    this.remove_duplicates_safe(data).forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
