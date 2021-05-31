@@ -138,7 +138,13 @@ export default class WorldMap {
 
   createCircles(data) {
     const circles: any[] = [];
-    data.forEach((dataPoint) => {
+
+    var uniq = data.reduce(function(a,b){
+      if (a.indexOf(b) < 0 ) a.push(b);
+      return a;
+    },[]);
+
+    uniq.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
@@ -149,7 +155,13 @@ export default class WorldMap {
   }
 
   updateCircles(data) {
-    data.forEach((dataPoint) => {
+
+    var uniq = data.reduce(function(a,b){
+      if (a.indexOf(b) < 0 ) a.push(b);
+      return a;
+    },[]);
+
+    uniq.forEach((dataPoint) => {
       if (!dataPoint.locationName) {
         return;
       }
